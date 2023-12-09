@@ -22,6 +22,7 @@ abstract class KeyPadHandler extends InputMethodService {
 	private int ignoreNextKeyUp = 0;
 
 	private int lastKeyCode = 0;
+	private long lastKeyTime;
 	private int keyRepeatCounter = 0;
 
 	private int lastNumKeyCode = 0;
@@ -201,12 +202,22 @@ abstract class KeyPadHandler extends InputMethodService {
 			return true;
 		}
 
+		long deltaTime = event.getDownTime() - lastKeyTime;
+		if(lastKeyCode == keyCode)
+		{
+			if(deltaTime < 150)
+			{
+				return true;
+			}
+		}
+
 		if (isBackspaceHandled) {
 			return true;
 		}
 
 		keyRepeatCounter = (lastKeyCode == keyCode) ? keyRepeatCounter + 1 : 0;
 		lastKeyCode = keyCode;
+		lastKeyTime = event.getDownTime();
 
 		if (Key.isNumber(keyCode)) {
 			numKeyRepeatCounter = (lastNumKeyCode == keyCode) ? numKeyRepeatCounter + 1 : 0;
